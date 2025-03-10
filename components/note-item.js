@@ -1,21 +1,42 @@
 class NoteItem extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: "open" }); // Mengaktifkan Shadow DOM untuk menjaga styling tetap terisolasi
+        this.attachShadow({ mode: "open" });
     }
 
     static get observedAttributes() {
-        return ["title", "body", "created-at", "author"]; // Tambahkan "author" ke daftar atribut yang dipantau
+        return ["title", "body", "created-at", "id"];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue !== newValue) {
-            this.render(); // Memperbarui tampilan jika ada perubahan atribut
+            this.render();
         }
     }
 
     connectedCallback() {
-        this.render(); // Memanggil render() saat elemen pertama kali dimasukkan ke dalam DOM
+        this.render();
+    }
+
+    async deleteNote() {
+        const noteId = this.getAttribute("id");
+        if (!noteId) return;
+
+        try {
+            const response = await fetch(`https://notes-api.dicoding.dev/v2/notes/${noteId}`, {
+                method: "DELETE",
+            });
+
+            const data = await response.json();
+            if (data.status === "success") {
+                this.remove(); // Hapus elemen dari DOM
+                document.querySelector("note-list").fetchNotes(); // Perbarui daftar catatan
+            } else {
+                console.error("Gagal menghapus catatan:", data.message);
+            }
+        } catch (error) {
+            console.error("Error deleting note:", error);
+        }
     }
 
     render() {
@@ -27,6 +48,7 @@ class NoteItem extends HTMLElement {
                     border-radius: 8px;
                     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                     margin: 10px 0;
+                    position: relative;
                 }
                 h3 {
                     margin: 0;
@@ -36,20 +58,32 @@ class NoteItem extends HTMLElement {
                     font-size: 14px;
                     color: #555;
                 }
-                .date, .author {
+                .date {
                     font-size: 12px;
                     color: #777;
                 }
+                button {
+                    background-color: red;
+                    color: white;
+                    border: none;
+                    padding: 5px 10px;
+                    cursor: pointer;
+                    border-radius: 5px;
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                }
             </style>
             <div class="note">
-                <h3>${this.getAttribute("title") || "Untitled"}</h3> 
-                <p>${this.getAttribute("body") || "No content"}</p> 
-                <p class="date">Created at: ${this.getAttribute("created-at") || "Unknown"}</p> 
-                <p class="author">Author: ${this.getAttribute("author") || "Unknown"}</p> 
+                <h3>${this.getAttribute("title") || "Untitled"}</h3>
+                <p>${this.getAttribute("body") || "No content"}</p>
+                <p class="date">Created at: ${this.getAttribute("created-at") || "Unknown"}</p>
+                <button>Hapus</button>
             </div>
         `;
+
+        this.shadowRoot.querySelector("button").addEventListener("click", () => this.deleteNote());
     }
 }
 
-// Mendaftarkan elemen custom "note-item" agar bisa digunakan di HTML
 customElements.define("note-item", NoteItem);

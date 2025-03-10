@@ -1,26 +1,46 @@
 class NoteList extends HTMLElement {
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' }); // Menggunakan Shadow DOM agar elemen ini terisolasi dari gaya global
+        this.attachShadow({ mode: 'open' });
+    }
+
+    async fetchNotes() {
+        try {
+            const response = await fetch('https://notes-api.dicoding.dev/v2/notes');
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                this.notes = data.data; // Simpan catatan dari API ke dalam variabel
+            } else {
+                console.error("Gagal mengambil catatan:", data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching notes:", error);
+        }
     }
 
     set notes(notes) {
-        this._notes = notes; // Menyimpan data catatan yang diberikan ke dalam properti privat
-        this.render(); // Memanggil ulang render untuk memperbarui tampilan daftar catatan
+        this._notes = notes;
+        this.render();
+    }
+
+    connectedCallback() {
+        this.fetchNotes(); // Ambil daftar catatan saat elemen pertama kali dimasukkan ke dalam DOM
     }
 
     render() {
-        this.shadowRoot.innerHTML = ''; // Menghapus konten sebelumnya agar tidak terjadi duplikasi saat merender ulang
+        this.shadowRoot.innerHTML = ''; 
+
         this._notes.forEach(note => {
-            const noteItem = document.createElement('note-item'); // Membuat elemen note-item untuk setiap catatan
-            noteItem.setAttribute('title', note.title); // Menetapkan judul catatan
-            noteItem.setAttribute('body', note.body); // Menetapkan isi catatan
-            noteItem.setAttribute('created-at', note.createdAt); // Menetapkan tanggal pembuatan catatan
-            noteItem.setAttribute('author', note.author || "Unknown"); // Menetapkan author catatan
-            this.shadowRoot.appendChild(noteItem); // Menambahkan elemen note-item ke dalam daftar
+            const noteItem = document.createElement('note-item');
+            noteItem.setAttribute('title', note.title);
+            noteItem.setAttribute('body', note.body);
+            noteItem.setAttribute('created-at', note.createdAt);
+            noteItem.setAttribute('id', note.id); // Tambahkan ID untuk keperluan penghapusan
+            
+            this.shadowRoot.appendChild(noteItem);
         });
     }
 }
 
-// Mendaftarkan elemen custom "note-list" agar bisa digunakan di HTML
 customElements.define('note-list', NoteList);
