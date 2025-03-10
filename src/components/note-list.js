@@ -16,6 +16,7 @@ class NoteList extends HTMLElement {
             console.error('Error fetching notes:', error);
         }
     }
+    
 
     set notes(notes) {
         this._notes = notes;

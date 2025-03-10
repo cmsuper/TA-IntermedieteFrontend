@@ -23,10 +23,7 @@ class NoteForm extends HTMLElement {
     
             const result = await response.json();
             if (result.status === "success") {
-                // Dispatch event di seluruh dokumen agar bisa didengar oleh elemen lain
-                document.dispatchEvent(new Event('note-added'));
-                
-                // Opsional: Kosongkan input setelah sukses menambah catatan
+                document.dispatchEvent(new Event('note-added')); // Memicu event global agar daftar catatan diperbarui
                 this.shadowRoot.querySelector("#title").value = "";
                 this.shadowRoot.querySelector("#body").value = "";
             }

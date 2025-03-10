@@ -26,12 +26,13 @@ class NoteItem extends HTMLElement {
             });
             const result = await response.json();
             if (result.status === "success") {
-                this.remove();
+                this.remove(); // Hapus elemen dari DOM setelah sukses menghapus
             }
         } catch (error) {
             console.error("Error deleting note:", error);
         }
     }
+    
 
     render() {
         this.shadowRoot.innerHTML = `
