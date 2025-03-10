@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Menentukan jenis dokumen sebagai HTML5 -->
+    <meta charset="UTF-8">
+    <!-- Menyesuaikan tampilan untuk perangkat mobile agar responsif -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Menentukan judul halaman yang akan ditampilkan di tab browser -->
+    <title>Notes App</title>
+    <!-- Menghubungkan file CSS eksternal untuk styling -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Bagian header yang berisi judul aplikasi -->
+    <header>
+        <h1>Notes App</h1>
+    </header>
+    <div id="success-message" class="hidden">Note successfully added!</div>
+    <!-- Bagian utama aplikasi -->
+    <main>
+        <!-- Komponen custom untuk formulir penambahan catatan -->
+        <note-form></note-form>
+        <!-- Komponen custom untuk daftar catatan -->
+        <note-list></note-list>
+    </main>
+
+    <!-- Menyertakan file JavaScript dengan type="module" agar mendukung ES Module -->
+    <!-- Komponen untuk menampilkan satu item catatan -->
+    <script type="module" src="components/note-item.js"></script>
+    <!-- Komponen untuk menampilkan daftar catatan -->
+    <script type="module" src="components/note-list.js"></script>
+    <!-- Komponen untuk menangani input formulir catatan -->
+    <script type="module" src="components/note-form.js"></script>
+    <!-- Skrip utama yang mengatur interaksi aplikasi -->
+    <script type="module" src="script.js"></script>
+    <footer>
+      <p>Created by Admin 2025</p>
+  </footer>
+</body>
+</html>
