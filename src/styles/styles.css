@@ -1,13 +1,11 @@
+/* RESET */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    display: grid;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f5f5f5;
 }
 
+/* HEADER */
 header {
     width: 100%;
     background-color: #6200ea;
@@ -17,13 +15,21 @@ header {
     font-size: 1.5rem;
 }
 
-main {
+/* LAYOUT UTAMA */
+.container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 1fr 2fr; /* Form lebih kecil, daftar catatan lebih besar */
     gap: 20px;
-    grid-template-columns: repeat(2, 1fr); /* Membuat dua kolom */
-    width: 80%;
-    margin-top: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    align-items: start;
+}
+
+/* FORM CATATAN */
+.note-form-container {
+    display: flex;
+    justify-content: center;
 }
 
 form {
@@ -31,7 +37,7 @@ form {
     flex-direction: column;
     gap: 10px;
     max-width: 400px;
-    margin: 20px auto; /* Agar form ada di tengah */
+    width: 100%;
     background: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -47,8 +53,8 @@ input, textarea {
 }
 
 textarea {
-    min-height: 100px; /* Supaya lebih nyaman saat mengetik */
-    resize: vertical; /* Bisa diubah ukurannya */
+    min-height: 100px;
+    resize: vertical;
 }
 
 button {
@@ -66,47 +72,34 @@ button:hover {
     background-color: #3700b3;
 }
 
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+/* DAFTAR CATATAN */
+.notes-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-note-form, note-list {
-    width: 100%;
+.note-item {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.error-message {
-    color: red;
-    font-size: 12px;
-    margin-top: 5px;
-    display: block;
-}
-
-#submitButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-#notification {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: #4CAF50;
+.delete-button {
+    background: red;
     color: white;
-    padding: 10px 20px;
+    border: none;
+    padding: 5px 10px;
     border-radius: 5px;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    cursor: pointer;
 }
 
-#notification.show {
-    opacity: 1;
-}
-
-.hidden {
-    display: none;
-}
-
+/* NOTIFIKASI */
 #success-message {
     position: fixed;
     top: 10px;
@@ -127,10 +120,28 @@ note-form, note-list {
     opacity: 1;
 }
 
-#success-message.hidden {
-    opacity: 0;
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr; /* Stack elemen pada layar kecil */
+    }
+
+    .note-form-container {
+        justify-content: center;
+    }
+
+    .notes-section {
+        align-items: center;
+    }
 }
 
+@media (max-width: 600px) {
+    .notes-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* FOOTER */
 footer {
     width: 100%;
     background-color: #6200ea;
@@ -139,9 +150,4 @@ footer {
     padding: 10px 0;
     bottom: 0;
     left: 0;
-}
-
-footer p {
-    margin: 0;
-    font-size: 14px;
 }

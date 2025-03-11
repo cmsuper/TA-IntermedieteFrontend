@@ -20,19 +20,26 @@ class NoteItem extends HTMLElement {
 
     async deleteNote() {
         const noteId = this.getAttribute("id");
+        if (!noteId) return;
+
+        const loading = document.querySelector("loading-indicator");
+        loading.show(); // Tampilkan loading sebelum request
+
         try {
             const response = await fetch(`https://notes-api.dicoding.dev/v2/notes/${noteId}`, {
                 method: "DELETE",
             });
+
             const result = await response.json();
             if (result.status === "success") {
-                this.remove(); // Hapus elemen dari DOM setelah sukses menghapus
+                document.dispatchEvent(new Event('note-added')); // Memicu event untuk memperbarui daftar catatan
             }
         } catch (error) {
             console.error("Error deleting note:", error);
+        } finally {
+            loading.hide(); // Sembunyikan loading setelah request selesai
         }
     }
-    
 
     render() {
         this.shadowRoot.innerHTML = `
@@ -66,6 +73,7 @@ class NoteItem extends HTMLElement {
                 <button id="delete-btn">Delete</button>
             </div>
         `;
+
         this.shadowRoot.querySelector("#delete-btn").addEventListener("click", () => this.deleteNote());
     }
 }
