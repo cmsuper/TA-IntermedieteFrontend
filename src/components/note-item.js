@@ -5,11 +5,11 @@ class NoteItem extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ["id", "title", "body", "created-at"];
+        return ["id", "title", "body", "created-at", "archived"];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue !== newValue) {
+        if (name === "archived") {
             this.render();
         }
     }
@@ -18,64 +18,29 @@ class NoteItem extends HTMLElement {
         this.render();
     }
 
-    async deleteNote() {
+    async toggleArchive() {
         const noteId = this.getAttribute("id");
-        if (!noteId) return;
+        const archived = this.getAttribute("archived") === "true";
+        const url = `https://notes-api.dicoding.dev/v2/notes/${noteId}/${archived ? "unarchive" : "archive"}`;
 
-        const loading = document.querySelector("loading-indicator");
-        loading.show(); // Tampilkan loading sebelum request
-
-        try {
-            const response = await fetch(`https://notes-api.dicoding.dev/v2/notes/${noteId}`, {
-                method: "DELETE",
-            });
-
-            const result = await response.json();
-            if (result.status === "success") {
-                document.dispatchEvent(new Event('note-added')); // Memicu event untuk memperbarui daftar catatan
-            }
-        } catch (error) {
-            console.error("Error deleting note:", error);
-        } finally {
-            loading.hide(); // Sembunyikan loading setelah request selesai
-        }
+        await fetch(url, { method: "POST" });
+        this.setAttribute("archived", !archived);
+        this.dispatchEvent(new CustomEvent("noteUpdated"));
     }
 
     render() {
         this.shadowRoot.innerHTML = `
             <style>
-                .note {
-                    background: white;
-                    padding: 15px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                    margin: 10px 0;
-                    position: relative;
-                }
-                h3 { margin: 0; font-size: 18px; }
-                p { font-size: 14px; color: #555; }
-                .date { font-size: 12px; color: #777; }
-                button {
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background: red;
-                    color: white;
-                    border: none;
-                    padding: 5px;
-                    cursor: pointer;
-                }
+                .note-item { padding: 10px; border: 1px solid #ddd; }
             </style>
-            <div class="note">
-                <h3>${this.getAttribute("title") || "Untitled"}</h3>
-                <p>${this.getAttribute("body") || "No content"}</p>
-                <p class="date">Created at: ${this.getAttribute("created-at") || "Unknown"}</p>
-                <button id="delete-btn">Delete</button>
+            <div class="note-item">
+                <h3>${this.getAttribute("title")}</h3>
+                <p>${this.getAttribute("body")}</p>
+                <button id="toggle-archive">${this.getAttribute("archived") === "true" ? "Kembalikan" : "Arsipkan"}</button>
             </div>
         `;
 
-        this.shadowRoot.querySelector("#delete-btn").addEventListener("click", () => this.deleteNote());
+        this.shadowRoot.querySelector("#toggle-archive").addEventListener("click", () => this.toggleArchive());
     }
 }
-
 customElements.define("note-item", NoteItem);
